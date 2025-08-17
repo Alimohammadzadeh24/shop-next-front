@@ -1,0 +1,101 @@
+{
+  "common": {
+    "loading": "در حال بارگذاری...",
+    "error": "خطایی رخ داده است",
+    "save": "ذخیره",
+    "cancel": "لغو",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "back": "بازگشت",
+    "search": "جستجو",
+    "next": "بعدی",
+    "previous": "قبلی",
+    "submit": "ارسال",
+    "close": "بستن"
+  },
+  "navigation": {
+    "home": "خانه",
+    "products": "محصولات",
+    "orders": "سفارش‌ها",
+    "returns": "مرجوعی‌ها",
+    "profile": "پروفایل",
+    "cart": "سبد خرید",
+    "login": "ورود",
+    "register": "ثبت‌نام",
+    "logout": "خروج"
+  },
+  "auth": {
+    "login": "ورود",
+    "register": "ثبت‌نام",
+    "email": "ایمیل",
+    "password": "رمز عبور",
+    "firstName": "نام",
+    "lastName": "نام خانوادگی",
+    "confirmPassword": "تکرار رمز عبور",
+    "forgotPassword": "فراموشی رمز عبور",
+    "changePassword": "تغییر رمز عبور",
+    "currentPassword": "رمز عبور فعلی",
+    "newPassword": "رمز عبور جدید"
+  },
+  "products": {
+    "title": "محصولات",
+    "category": "دسته",
+    "brand": "برند",
+    "price": "قیمت",
+    "addToCart": "افزودن به سبد",
+    "outOfStock": "ناموجود",
+    "inStock": "موجود",
+    "description": "توضیحات",
+    "specifications": "مشخصات",
+    "reviews": "نظرات"
+  },
+  "cart": {
+    "title": "سبد خرید",
+    "empty": "سبد خرید شما خالی است.",
+    "quantity": "تعداد",
+    "unitPrice": "قیمت واحد",
+    "totalPrice": "جمع کل",
+    "checkout": "تسویه‌حساب",
+    "remove": "حذف"
+  },
+  "orders": {
+    "title": "سفارش‌ها",
+    "orderNumber": "شماره سفارش",
+    "orderDate": "تاریخ سفارش",
+    "totalAmount": "مبلغ کل",
+    "status": "وضعیت",
+    "shippingAddress": "آدرس ارسال",
+    "items": "اقلام",
+    "pending": "در انتظار تایید",
+    "confirmed": "تایید شده",
+    "shipped": "ارسال شد",
+    "delivered": "تحویل شد",
+    "cancelled": "لغو شد"
+  },
+  "returns": {
+    "title": "مرجوعی‌ها",
+    "reason": "دلیل مرجوعی",
+    "refundAmount": "مبلغ بازپرداخت",
+    "requestReturn": "درخواست مرجوعی",
+    "requested": "درخواست ثبت شد",
+    "approved": "تایید شد",
+    "rejected": "رد شد",
+    "completed": "تکمیل شد"
+  },
+  "profile": {
+    "title": "پروفایل",
+    "personalInfo": "اطلاعات شخصی",
+    "addresses": "آدرس‌ها",
+    "security": "امنیت"
+  },
+  "address": {
+    "province": "استان",
+    "city": "شهر",
+    "street": "خیابان",
+    "postalCode": "کدپستی",
+    "phone": "تلفن"
+  },
+  "currency": {
+    "toman": "تومان"
+  }
+}
