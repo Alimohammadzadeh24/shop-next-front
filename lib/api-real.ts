@@ -45,9 +45,9 @@ async function apiRequest<T>(
 ): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
 
-  const headers: Record<string, string> = {
+  const headers: HeadersInit = {
     "Content-Type": "application/json",
-    ...(options.headers as Record<string, string>),
+    ...options.headers,
   };
 
   if (accessToken) {
@@ -71,13 +71,7 @@ async function apiRequest<T>(
       throw new ApiError(response.status, errorMessage);
     }
 
-    const responseData = await response.json();
-
-    // Handle backend response format { success: true, data: ... }
-    const data =
-      responseData.success !== undefined
-        ? responseData.data || responseData
-        : responseData;
+    const data = await response.json();
 
     if (schema) {
       return schema.parse(data);
@@ -155,19 +149,11 @@ export const productsApi = {
     const queryString = queryParams.toString();
     const url = `/products${queryString ? `?${queryString}` : ""}`;
 
-    const products = await apiRequest(
+    return apiRequest(
       url,
       { method: "GET" },
-      z.array(productSchema)
+      paginatedResponseSchema(productSchema)
     );
-
-    // Create pagination metadata since backend doesn't provide it
-    return {
-      data: products,
-      total: products.length, // This won't be accurate for pagination, but works for now
-      skip: params?.skip || 0,
-      take: params?.take || 10,
-    };
   },
 
   getProduct: async (id: string): Promise<Product> => {
