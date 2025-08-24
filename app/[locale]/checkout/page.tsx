@@ -65,8 +65,7 @@ export default function CheckoutPage() {
     if (!user) return;
 
     const orderData = {
-      userId: user.id,
-      items: items.map(item => ({
+      items: items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
@@ -76,9 +75,13 @@ export default function CheckoutPage() {
     };
 
     try {
-      await createOrderMutation.mutateAsync(orderData);
+      const createdOrder = await createOrderMutation.mutateAsync(orderData);
       clearCart();
-      router.push('/orders');
+      if (createdOrder?.id) {
+        router.push(`/orders/${createdOrder.id}`);
+      } else {
+        router.push('/orders');
+      }
     } catch (error) {
       console.error('خطا در ثبت سفارش:', error);
     }

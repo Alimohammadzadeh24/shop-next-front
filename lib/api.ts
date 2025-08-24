@@ -235,7 +235,6 @@ export const ordersApi = {
   },
 
   createOrder: async (orderData: {
-    userId: string;
     items: { productId: string; quantity: number; unitPrice: number }[];
     shippingAddress: Record<string, unknown>;
   }): Promise<Order> => {

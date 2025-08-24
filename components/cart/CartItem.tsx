@@ -35,53 +35,50 @@ export function CartItem({ item }: CartItemProps) {
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', gap: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 3 } }}>
           <CardMedia
             component="img"
-            sx={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 1 }}
+            sx={{ width: { xs: '100%', sm: 120 }, height: { xs: 160, sm: 120 }, objectFit: 'cover', borderRadius: 1 }}
             image={productImage}
             alt={item.product.name}
           />
-          
+
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-              {item.product.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 0 }}>
+                {item.product.name}
+              </Typography>
+              <IconButton onClick={handleRemove} color="error" size="small" sx={{ ml: 1 }}>
+                <Delete />
+              </IconButton>
+            </Box>
+
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: { xs: 2, sm: 3 }, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+            >
               {item.product.description}
             </Typography>
-            
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                   تعداد:
                 </Typography>
-                <QuantityStepper
-                  value={item.quantity}
-                  onChange={handleQuantityChange}
-                  min={1}
-                  max={10}
-                />
+                <QuantityStepper value={item.quantity} onChange={handleQuantityChange} min={1} max={10} />
               </Box>
-              
-              <IconButton
-                onClick={handleRemove}
-                color="error"
-                sx={{ ml: 2 }}
-              >
-                <Delete />
-              </IconButton>
             </Box>
           </Box>
-          
-          <Box sx={{ textAlign: 'left', minWidth: 120 }}>
+
+          <Box sx={{ textAlign: { xs: 'inherit', sm: 'left' }, minWidth: { xs: 'auto', sm: 140 }, mt: { xs: 1, sm: 0 } }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>
               قیمت واحد:
             </Typography>
             <Price amount={item.unitPrice} variant="body1" />
-            
+
             <Divider sx={{ my: 1 }} />
-            
+
             <Typography variant="body2" color="text.secondary" gutterBottom>
               جمع کل:
             </Typography>
