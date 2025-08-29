@@ -7,8 +7,9 @@ import {
   Card,
   CardContent,
   Chip,
+  Button,
 } from '@mui/material';
-import { Receipt, Visibility } from '@mui/icons-material';
+import { Receipt, Visibility, AssignmentReturn } from '@mui/icons-material';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { AppShell } from '@/components/layout/AppShell';
@@ -22,15 +23,50 @@ import { formatPersianDate } from '@/lib/utils';
 
 export default function OrdersPage() {
   const t = useTranslations();
-  const { user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   
-  const { data: ordersData, isLoading } = useOrders({
-    userId: user?.id,
+  const { data: ordersData, isLoading, error } = useOrders({
     take: 50,
   });
 
-  if (isLoading) {
+  // Debug logs
+  console.log('Orders Page Debug:', { 
+    isAuthenticated, 
+    isLoading, 
+    error: error?.message, 
+    errorObject: error,
+    ordersData,
+    hasData: !!ordersData?.data,
+    dataLength: ordersData?.data?.length,
+    rawData: ordersData 
+  });
+
+  // Show loading if auth is still loading or orders are loading
+  if (!isAuthenticated || isLoading) {
     return <AppShell><LoadingState /></AppShell>;
+  }
+
+  // Show error state if there's an API error
+  if (error) {
+    console.error('Orders API Error:', error);
+    return (
+      <AppShell>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          <EmptyState
+            icon={<Receipt sx={{ fontSize: 64 }} />}
+            title="خطا در بارگذاری سفارشات"
+            description={`خطا: ${error?.message || 'نامشخص'} - لطفاً مجدداً تلاش کنید.`}
+            action={
+              <Link href="/products" style={{ textDecoration: 'none' }}>
+                <Typography variant="button" color="primary">
+                  مشاهده محصولات
+                </Typography>
+              </Link>
+            }
+          />
+        </Container>
+      </AppShell>
+    );
   }
 
   if (!ordersData?.data.length) {
@@ -85,14 +121,29 @@ export default function OrdersPage() {
                     <Price amount={order.totalAmount} variant="h6" sx={{ fontWeight: 'bold' }} />
                   </Box>
                   
-                  <Link href={`/orders/${order.id}`} style={{ textDecoration: 'none' }}>
-                    <Chip
-                      label="مشاهده جزئیات"
-                      icon={<Visibility />}
-                      clickable
-                      color="primary"
-                    />
-                  </Link>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {order.status === 'DELIVERED' && (
+                      <Link href={`/returns?orderId=${order.id}`} style={{ textDecoration: 'none' }}>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<AssignmentReturn />}
+                          sx={{ mr: 1 }}
+                        >
+                          ثبت مرجوعی
+                        </Button>
+                      </Link>
+                    )}
+                    
+                    <Link href={`/orders/${order.id}`} style={{ textDecoration: 'none' }}>
+                      <Chip
+                        label="مشاهده جزئیات"
+                        icon={<Visibility />}
+                        clickable
+                        color="primary"
+                      />
+                    </Link>
+                  </Box>
                 </Box>
               </CardContent>
             </Card>

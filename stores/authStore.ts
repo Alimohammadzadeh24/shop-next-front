@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import { User } from '@/types';
-import { setAccessToken } from '@/lib/api';
+import { create } from "zustand";
+import { User } from "@/types";
+import { setAccessToken } from "@/lib/api";
 
 interface AuthState {
   user: User | null;
@@ -30,12 +30,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   setTokens: (accessToken: string, refreshToken: string) => {
     setAccessToken(accessToken);
     // In a real app, you'd want to store refresh token securely
-    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem("refreshToken", refreshToken);
   },
 
   logout: () => {
     setAccessToken(null);
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userData");
     set({
       user: null,
       isAuthenticated: false,

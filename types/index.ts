@@ -1,6 +1,11 @@
-export type Role = 'ADMIN' | 'USER';
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-export type ReturnStatus = 'REQUESTED' | 'APPROVED' | 'REJECTED' | 'COMPLETED';
+export type Role = "ADMIN" | "USER";
+export type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
+export type ReturnStatus = "REQUESTED" | "APPROVED" | "REJECTED" | "COMPLETED";
 
 export interface User {
   id: string;
@@ -40,7 +45,7 @@ export interface OrderItem {
   productId: string;
   quantity: number;
   unitPrice: number;
-  totalPrice: number;
+  totalPrice?: number;
   product?: Product;
 }
 
@@ -77,6 +82,7 @@ export interface CartItem {
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+  user?: User;
 }
 
 export interface ApiResponse<T> {

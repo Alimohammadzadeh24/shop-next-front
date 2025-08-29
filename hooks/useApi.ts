@@ -9,6 +9,7 @@ import {
   setAccessToken,
 } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
+import { getDefaultUserId } from "@/lib/utils";
 import { toast } from "sonner";
 
 // Products hooks
@@ -35,14 +36,18 @@ export function useProduct(id: string) {
 
 // Orders hooks
 export function useOrders(params?: {
-  userId?: string;
   status?: string;
   skip?: number;
   take?: number;
 }) {
+  const { isAuthenticated } = useAuthStore();
+
   return useQuery({
     queryKey: ["orders", params],
     queryFn: () => ordersApi.getOrders(params),
+    enabled: isAuthenticated, // Only run query if user is authenticated
+    retry: 2, // Limit retries to prevent excessive API calls
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
   });
 }
 
@@ -71,15 +76,19 @@ export function useCreateOrder() {
 
 // Returns hooks
 export function useReturns(params?: {
-  userId?: string;
   orderId?: string;
   status?: string;
   skip?: number;
   take?: number;
 }) {
+  const { isAuthenticated } = useAuthStore();
+
   return useQuery({
     queryKey: ["returns", params],
     queryFn: () => returnsApi.getReturns(params),
+    enabled: isAuthenticated,
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -116,18 +125,29 @@ export function useLogin() {
       setTokens(data.accessToken, data.refreshToken);
       setAccessToken(data.accessToken);
 
-      // TODO: Fetch user data after login if backend provides user info
-      // For now, using the token to identify user
-      setUser({
-        id: "user-current",
-        email: "",
-        firstName: "کاربر",
-        lastName: "فعلی",
-        role: "USER",
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      // Store tokens in localStorage
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
+      // Check if backend provides user data
+      if (data.user) {
+        setUser(data.user);
+        localStorage.setItem("userData", JSON.stringify(data.user));
+      } else {
+        // Fallback user data if backend doesn't provide user info
+        const fallbackUser = {
+          id: getDefaultUserId(),
+          email: "",
+          firstName: "کاربر",
+          lastName: "فعلی",
+          role: "USER" as const,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setUser(fallbackUser);
+        localStorage.setItem("userData", JSON.stringify(fallbackUser));
+      }
       toast.success("با موفقیت وارد شدید");
     },
     onError: (error: any) => {
@@ -146,16 +166,29 @@ export function useRegister() {
       setTokens(data.accessToken, data.refreshToken);
       setAccessToken(data.accessToken);
 
-      setUser({
-        id: "user-current",
-        email: variables.email,
-        firstName: variables.firstName,
-        lastName: variables.lastName,
-        role: (variables.role as any) || "USER",
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      // Store tokens in localStorage
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
+      // Check if backend provides user data
+      if (data.user) {
+        setUser(data.user);
+        localStorage.setItem("userData", JSON.stringify(data.user));
+      } else {
+        // Create user data from registration info
+        const newUser = {
+          id: getDefaultUserId(),
+          email: variables.email,
+          firstName: variables.firstName,
+          lastName: variables.lastName,
+          role: (variables.role as any) || "USER",
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setUser(newUser);
+        localStorage.setItem("userData", JSON.stringify(newUser));
+      }
       toast.success("حساب کاربری شما ایجاد شد");
     },
     onError: (error: any) => {

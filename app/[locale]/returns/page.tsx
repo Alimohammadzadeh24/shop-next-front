@@ -14,7 +14,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Assignment, Add } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { AppShell } from '@/components/layout/AppShell';
@@ -36,22 +36,36 @@ export default function ReturnsPage() {
 
   const prefilledOrderId = searchParams.get('orderId');
 
+  // Auto open dialog if orderId is provided
+  useEffect(() => {
+    if (prefilledOrderId) {
+      setDialogOpen(true);
+    }
+  }, [prefilledOrderId]);
+
   const { data: returnsData, isLoading } = useReturns({
-    userId: user?.id,
     take: 50,
   });
 
   const createReturnMutation = useCreateReturn();
 
   const handleCreateReturn = async () => {
-    if (!user || !prefilledOrderId) return;
+    if (!prefilledOrderId || !returnReason || !returnAmount) {
+      console.error('Missing required fields for return request');
+      return;
+    }
+
+    const refundAmountNumber = parseFloat(returnAmount);
+    if (refundAmountNumber <= 0) {
+      console.error('Refund amount must be greater than 0');
+      return;
+    }
 
     try {
       await createReturnMutation.mutateAsync({
         orderId: prefilledOrderId,
-        userId: user.id,
-        reason: returnReason,
-        refundAmount: parseFloat(returnAmount),
+        reason: returnReason.trim(),
+        refundAmount: refundAmountNumber,
       });
       setDialogOpen(false);
       setReturnReason('');
@@ -153,23 +167,37 @@ export default function ReturnsPage() {
 
         {/* Create Return Dialog */}
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-          <DialogTitle>درخواست مرجوعی</DialogTitle>
+          <DialogTitle>
+            درخواست مرجوعی
+            {prefilledOrderId && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                سفارش #{prefilledOrderId.slice(-8)}
+              </Typography>
+            )}
+          </DialogTitle>
           <DialogContent>
             <TextField
               label="دلیل مرجوعی"
               multiline
               rows={4}
               fullWidth
+              required
               value={returnReason}
               onChange={(e) => setReturnReason(e.target.value)}
               sx={{ mb: 2, mt: 1 }}
+              helperText="لطفاً دلیل مرجوعی کالا را شرح دهید"
+              error={returnReason.trim() === '' && returnReason !== ''}
             />
             <TextField
               label="مبلغ درخواستی (تومان)"
               type="number"
               fullWidth
+              required
               value={returnAmount}
               onChange={(e) => setReturnAmount(e.target.value)}
+              inputProps={{ min: 0, step: 1000 }}
+              helperText="مبلغ قابل بازپرداخت باید بیشتر از صفر باشد"
+              error={parseFloat(returnAmount) <= 0 && returnAmount !== ''}
             />
           </DialogContent>
           <DialogActions>
@@ -179,7 +207,12 @@ export default function ReturnsPage() {
             <Button
               onClick={handleCreateReturn}
               variant="contained"
-              disabled={!returnReason || !returnAmount || createReturnMutation.isPending}
+              disabled={
+                !returnReason.trim() ||
+                !returnAmount ||
+                parseFloat(returnAmount) <= 0 ||
+                createReturnMutation.isPending
+              }
             >
               {createReturnMutation.isPending ? 'در حال ثبت...' : 'ثبت درخواست'}
             </Button>
